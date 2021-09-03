@@ -50,6 +50,7 @@ def get_widget_cdict(db: Session, connectionDict: schema.ConnectionDict):
 
 def delete_all_connectionDict(db: Session):
    db.query(models.ConnectionDict).delete()
+   db.commit()
    return {"Details:" : "Delete All Entries Successfully"} 
 
 def error_message(message):
