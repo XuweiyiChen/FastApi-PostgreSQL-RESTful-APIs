@@ -21,4 +21,3 @@ class ConnectionDict(Base):
     widget_id = Column(Integer)
     slot = Column(String)
     connectionid = Column(Integer)
-    

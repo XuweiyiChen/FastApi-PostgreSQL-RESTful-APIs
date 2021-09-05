@@ -1,3 +1,5 @@
+from sqlalchemy.sql.expression import text
+from sqlalchemy.sql.sqltypes import Interval
 from fastapi import FastAPI, Depends, HTTPException
 from .database import SessionLocal, engine
 from sqlalchemy.orm import Session
@@ -38,21 +40,21 @@ def read_root():
 # def get_all_device_info(db=Depends(db)):
 #     return crud.get_device_info(db)
 
-@app.post('/configuration')
-def save_configuration(config: Configuration, db=Depends(db)):
-    # always maintain one config
-    # crud.delete_nudges_configuration(db)
-    return crud.save_nudges_configuration(db, config)
+# @app.post('/configuration')
+# def save_configuration(config: Configuration, db=Depends(db)):
+#     # always maintain one config
+#     # crud.delete_nudges_configuration(db)
+#     return crud.save_nudges_configuration(db, config)
 
-@app.get('/configuration')
-def get_configuration(db=Depends(db)):
-    config = crud.get_nudges_configuration(db)
-    if config:
-        return config
-    else:
-        raise HTTPException(404, crud.error_message('No configuration set'))
+# @app.get('/configuration')
+# def get_configuration(db=Depends(db)):
+#     config = crud.get_nudges_configuration(db)
+#     if config:
+#         return config
+#     else:
+#         raise HTTPException(404, crud.error_message('No configuration set'))
 
-@app.get('/connectionDict')
+@app.get('/connectionDict/allsearch')
 def get_connectionDict(db=Depends(db)):
     connectionId = crud.get_cdict(db)
     if connectionId:
@@ -62,7 +64,7 @@ def get_connectionDict(db=Depends(db)):
 
 @app.post('/connectionDict/search')
 def get_connectionDict_search(connectionDict: ConnectionDict, db=Depends(db)):
-    connectionId = crud.get_cdict(db, connectionDict)
+    connectionId = crud.get_widget_cdict(db, connectionDict)
     if connectionId:
         return connectionId
     else:
@@ -77,7 +79,31 @@ def delete_all_connectionDict(db=Depends(db)):
     else:
        raise HTTPException(404, crud.error_message('Cannot Process Delete. Please Retry')) 
 
-@app.post('/connectionDict')
+@app.get('/connectionDict/specific_delete')
+def delete_specific_connectionDict(widget_id: int, slot: str, connectionid=None, db=Depends(db)):
+    # this method is for delete entry in the table, which
+    # contains two circumstances: connectionId exists or None
+    if connectionid == None:
+        # we are going to delete everything have similar widget_id and slot
+        if crud.get_slot_separate(db, widget_id, slot) == []:
+           raise HTTPException(401, crud.error_message('No such slot to delete'))  
+        return crud.delete_slot(widget_id, slot, db)
+    else:
+        # we are going to delete everything have similar widget_id. slot and connectionId
+
+        # we need to operate here
+        connectionid = int(connectionid)
+        if not type(connectionid) is int:
+            return HTTPException(status_code=403, detail="Connection Id type should be integer")
+        else:
+            # even though the deletion should matter even if the deletion won't give you any warning
+            if crud.get_widget_cdict_separate(db, widget_id, slot, connectionid) == []:
+                raise HTTPException(401, crud.error_message('No such connection id to delete')) 
+            return crud.delete_connection(widget_id, slot, connectionid, db)
+            # test = crud.get_widget_cdict_separate(db, widget_id, slot, connectionid)
+            # return {"outputs100" : test}
+
+@app.post('/connectionDict/add')
 def save_connectionDict(connectionDict: ConnectionDict, db=Depends(db)):
     # just for safety purpose, fastapi handles the following exceptions using
     # code 422: error: Unprocessable entity
@@ -105,3 +131,22 @@ def save_connectionDict(connectionDict: ConnectionDict, db=Depends(db)):
        ) 
 
     return crud.save_cdict(db, connectionDict)
+
+@app.get('/connectionDict/isConnected')
+def isconnected(widget_id: int, slot: str, connectionid=None, db=Depends(db)):
+    # return {'test': 1000}
+    if connectionid:
+        connectionid = int(connectionid)
+        if not type(connectionid) is int:
+            return HTTPException(status_code=403, detail="Connection Id type should be integer")
+        else:
+            result = crud.is_connect_connection(widget_id, slot, connectionid, db)
+            return {'is connect' : result}
+    else:
+        result = crud.is_connect_slot(widget_id, slot, db)
+        return {'is connect' : result}
+
+@app.get('/connectionDict/isSet')
+def isset(widget_id: int, slot: str, db=Depends(db)):
+    binary = crud.is_set(widget_id, slot, db)
+    return {'is set': binary}
