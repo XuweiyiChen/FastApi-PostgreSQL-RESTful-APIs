@@ -20,25 +20,27 @@ Whenever modify the code, we need to restart this image and we should be able to
 
 ## File Structure
 
-— app
+—- Fastapi
+    -- app
 
-— crud.py
+        —- crud.py
 
-— database.py
+        —- database.py
 
-— main.py
+        —- main.py
 
-— models.py
+        —- models.py
 
-— schema.py
+        —- schema.py
 
-— docker-compose.yml
+    —- docker-compose.yml
 
-— Dockerfile
+    —- Dockerfile
 
-— requirement.txt
+    —- requirement.txt
 
-— README.md
+—- README.md
+-- README.html
 
 I believe we only need to change the following four files: [curd.py](http://curd.py), main.py, models.py, and [schema.py](http://schema.py). The rest of files are for configration purposes.
 
