@@ -1,0 +1,656 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>FastApi + PostgreSql ReadME</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+}
+.highlight-gray {
+	color: rgb(155,154,151);
+}
+.highlight-brown {
+	color: rgb(100,71,58);
+}
+.highlight-orange {
+	color: rgb(217,115,13);
+}
+.highlight-yellow {
+	color: rgb(223,171,1);
+}
+.highlight-teal {
+	color: rgb(15,123,108);
+}
+.highlight-blue {
+	color: rgb(11,110,153);
+}
+.highlight-purple {
+	color: rgb(105,64,165);
+}
+.highlight-pink {
+	color: rgb(173,26,114);
+}
+.highlight-red {
+	color: rgb(224,62,62);
+}
+.highlight-gray_background {
+	background: rgb(235,236,237);
+}
+.highlight-brown_background {
+	background: rgb(233,229,227);
+}
+.highlight-orange_background {
+	background: rgb(250,235,221);
+}
+.highlight-yellow_background {
+	background: rgb(251,243,219);
+}
+.highlight-teal_background {
+	background: rgb(221,237,234);
+}
+.highlight-blue_background {
+	background: rgb(221,235,241);
+}
+.highlight-purple_background {
+	background: rgb(234,228,242);
+}
+.highlight-pink_background {
+	background: rgb(244,223,235);
+}
+.highlight-red_background {
+	background: rgb(251,228,228);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(55, 53, 47, 0.6);
+	fill: rgba(55, 53, 47, 0.6);
+}
+.block-color-brown {
+	color: rgb(100,71,58);
+	fill: rgb(100,71,58);
+}
+.block-color-orange {
+	color: rgb(217,115,13);
+	fill: rgb(217,115,13);
+}
+.block-color-yellow {
+	color: rgb(223,171,1);
+	fill: rgb(223,171,1);
+}
+.block-color-teal {
+	color: rgb(15,123,108);
+	fill: rgb(15,123,108);
+}
+.block-color-blue {
+	color: rgb(11,110,153);
+	fill: rgb(11,110,153);
+}
+.block-color-purple {
+	color: rgb(105,64,165);
+	fill: rgb(105,64,165);
+}
+.block-color-pink {
+	color: rgb(173,26,114);
+	fill: rgb(173,26,114);
+}
+.block-color-red {
+	color: rgb(224,62,62);
+	fill: rgb(224,62,62);
+}
+.block-color-gray_background {
+	background: rgb(235,236,237);
+}
+.block-color-brown_background {
+	background: rgb(233,229,227);
+}
+.block-color-orange_background {
+	background: rgb(250,235,221);
+}
+.block-color-yellow_background {
+	background: rgb(251,243,219);
+}
+.block-color-teal_background {
+	background: rgb(221,237,234);
+}
+.block-color-blue_background {
+	background: rgb(221,235,241);
+}
+.block-color-purple_background {
+	background: rgb(234,228,242);
+}
+.block-color-pink_background {
+	background: rgb(244,223,235);
+}
+.block-color-red_background {
+	background: rgb(251,228,228);
+}
+.select-value-color-default { background-color: rgba(206,205,202,0.5); }
+.select-value-color-gray { background-color: rgba(155,154,151, 0.4); }
+.select-value-color-brown { background-color: rgba(140,46,0,0.2); }
+.select-value-color-orange { background-color: rgba(245,93,0,0.2); }
+.select-value-color-yellow { background-color: rgba(233,168,0,0.2); }
+.select-value-color-green { background-color: rgba(0,135,107,0.2); }
+.select-value-color-blue { background-color: rgba(0,120,223,0.2); }
+.select-value-color-purple { background-color: rgba(103,36,222,0.2); }
+.select-value-color-pink { background-color: rgba(221,0,129,0.2); }
+.select-value-color-red { background-color: rgba(255,0,26,0.2); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="d6e1918b-357e-4284-b6dd-d6ac70df2057" class="page sans"><header><img class="page-cover-image" src="https://www.notion.so/images/page-cover/met_silk_kashan_carpet.jpg" style="object-position:center 50%"/><div class="page-header-icon page-header-icon-with-cover"><span class="icon">🎃</span></div><h1 class="page-title">FastApi + PostgreSql ReadME</h1></header><div class="page-body"><p id="6f5e1375-bbec-4dbc-8389-947901dfe619" class="">I want to introduce this project in a following order: file structure, APIs and future needs.</p><h2 id="82a6aa6c-9dcf-4e3a-8d7c-55d539978ede" class="">General Ideas about this project</h2><ul id="d45af478-9814-42cb-9dcb-e92e54fcee21" class="bulleted-list"><li>It is a FastAPI app</li></ul><ul id="ec11bce9-23b6-4601-92ac-95ee6aaf88a6" class="bulleted-list"><li>PostgreSQL integration using SQLAlchemy</li></ul><ul id="b4ee5ee3-551c-41e9-b4d8-c173e8a10d73" class="bulleted-list"><li>Dockerfile and docker-compose integation</li></ul><h2 id="c0fc5c7a-bd6e-4c62-8691-a67daba31c96" class="">How to initialize this?</h2><pre id="5112e0ce-fe8e-4aa5-840d-14c18eefc77d" class="code"><code>docker-compose up --build </code></pre><p id="a19e7d4d-f0fd-4d8c-8780-941e86dcfb82" class="">should start this service.</p><p id="7b5c5611-34d3-4793-a755-21033eae87ca" class="">Whenever modify the code, we need to restart this image and we should be able to tell the updates.</p><h2 id="6711e90d-cca6-4660-8519-f64a797d2308" class="">File Structure</h2><p id="9dbe160e-a027-4185-961f-c6760544939f" class="">— app<div class="indented"><p id="a37e2f22-56ee-41ad-a69d-dfcaa5687870" class="">— crud.py</p><p id="e9e22d31-75e2-485c-a7d7-67ba6497bec4" class="">— database.py</p><p id="ba6a6c4a-82b2-4ce1-a3c8-d8c704c01d1f" class="">— main.py</p><p id="ac8fca67-1b79-4c0f-83ef-cc10fde8ba86" class="">— models.py</p><p id="3bfa6679-8983-495b-8ef5-ae28cc2fbf19" class="">— schema.py</p></div></p><p id="22af3b4f-9664-444e-afcc-408859b22e86" class="">— docker-compose.yml</p><p id="7592ba7e-2d9a-412f-b93b-cc05914afde9" class="">— Dockerfile</p><p id="e798862a-3b05-48c2-b971-8f14416c90ef" class="">— requirement.txt</p><p id="6ea52231-9797-40bb-aac0-43a654be60f5" class="">— README.md</p><p id="3c2c99cb-cca4-4935-89b2-61b367309eaa" class="">
+</p><p id="ce835bbe-6eab-4a95-97b9-8c4d55835c01" class="">I believe we only need to change the following four files: <a href="http://curd.py">curd.py</a>, main.py, models.py, and <a href="http://schema.py">schema.py</a>. The rest of files are for configration purposes.</p><p id="06f89953-5725-4867-92cf-02f46486eecc" class=""><a href="http://curd.py">curd.py</a> coordinates the internal services about extract out and inject data into the postgreSQL database, which is the only place we interact with the database directly.</p><p id="ea4ea7eb-8fb3-4e9c-b0ec-5999b28f0805" class=""><a href="http://main.py">main.py</a> provides APIs interacting with the client.</p><p id="4fe94405-4f89-4614-b97a-30cc2d4c849c" class=""><a href="http://schema.py">schema.py</a> and <a href="http://models.py">models.py</a> are a pair of class helping determine how to store the data. They usually looks very similar except for different purposes. schema.py provides a data frame for <a href="http://main.py">main.py</a>, and models.py provides a dataframe for PostgreSQL databases which tells how database create tables.</p><p id="3213ed49-4ecd-4a8b-8f26-a54b4bca2ba0" class="">Here are some concret examples:</p><ul id="81199da9-d4a5-4a69-8dfb-025ba951b7d1" class="bulleted-list"><li>In the curd.py, this is a common process of inject data into the database:</li></ul><pre id="6c3b074e-508f-4d42-baae-ee78b7ce667d" class="code"><code>def save_nudges_configuration(db: Session, config: schema.Configuration):
+    config_model = models.Configuration(**config.dict())
+    db.add(config_model)
+    db.commit()
+    db.refresh(config_model)
+    return config_model</code></pre><ul id="5ac1d547-ed7e-43a4-b7f4-1112a72f22be" class="bulleted-list"><li>In the main.py, we can start a simple API by the following code:</li></ul><pre id="049f7b08-7349-4a1d-9ebe-a724d2edcd89" class="code"><code>@app.get(&quot;/&quot;)
+def read_root():
+    return {&quot;Hello&quot;: &quot;World 10&quot;}</code></pre><ul id="69b8cb25-309b-4b55-94a7-27d0198b3311" class="bulleted-list"><li>In the schema.py, we could define a data frame for the service:</li></ul><pre id="40c9710a-a788-4f0d-8049-67b9ca28cde1" class="code"><code>class Configuration(BaseModel):
+    modelUrl: str
+    frequency: int
+    federated: bool
+
+    class Config:
+        orm_mode = True</code></pre><ul id="112a33c8-4b76-46aa-ad64-8b82c8cf3e1e" class="bulleted-list"><li>In the model.py, we could define a data frame for creaing Configuration table:</li></ul><pre id="a648d886-55be-414f-b5d3-cef8eba97780" class="code"><code>class Configuration(Base):
+    __tablename__ = &#x27;Configuration&#x27;
+    id = Column(Integer, primary_key = True, autoincrement = True)
+    modelUrl = Column(String)
+    frequency = Column(Integer)
+    federated = Column(Boolean)</code></pre><h2 id="3497fcae-22bd-46f5-a1ca-1b7b23aca47a" class="">APIs</h2><p id="1004ce8b-f9be-4d7e-b18e-3f85c1a5ac3d" class="">For APIs, it is easy to visit <a href="http://localhost/docs">http://localhost/docs</a> for a Swagger UI, but I want to give a berif introduction here.</p><p id="048f09e9-02ed-4707-9d5f-1ae61dd62018" class="">Generally, All the current APIs serve the purpose of replacing ConnectionDict class in BwBase.py.</p><p id="5cc3cf08-0a2c-4783-ad59-a7061f5d0ee0" class="">We assume we will provide each widget a unique Id. Slot and ConnectionId are the esential components in order to mimic the functionalities of ConnectionDict class. </p><p id="e097a2f0-1439-4846-9162-f6c84af1da4c" class="">Each Unique id, slot and connectionId will become an entry in the table.</p><h3 id="bdd98cd9-4bb8-4527-b636-c4cbec8d3a7d" class="">(POST) /connectionDict/add</h3><ul id="729bfb70-a9ef-4a6d-8a73-b9e96a269619" class="bulleted-list"><li>We could inject new entry into the ConnectionDict table.</li></ul><ul id="5e0134d0-bed7-4d32-93ce-f3d05060a057" class="bulleted-list"><li>Forbid Repetition entry</li></ul><ul id="2c081e19-953e-45ef-8502-bacea6f13306" class="bulleted-list"><li>Autoincreate primary key for ConnectionDict table</li></ul><p id="8eee8538-6c3f-49dc-9306-550aeaee90e3" class="">This function serves for the purpose of adding entries in the ConnectionDict table.</p><h3 id="d2e98048-436c-4f3f-ab03-4c25da792259" class="">(GET) /connectionDict/allsearch</h3><ul id="f3e1ac8e-338f-4077-ba71-d808db324f47" class="bulleted-list"><li>This is an API only for development</li></ul><ul id="39834739-d1e4-41b2-94e1-f99a1c4f250a" class="bulleted-list"><li>return all entries from the connectionDict table</li></ul><h3 id="df16c97e-8401-4df8-b70b-a77a1f80f00f" class="">(POST) /connectionDict/search</h3><ul id="fd26bc26-2c5c-4297-97f0-d1f3b1d8ee3d" class="bulleted-list"><li>This is an API only for development</li></ul><ul id="4e2d566e-25c0-41ab-b96e-87d14e8df339" class="bulleted-list"><li>return the specific entry if exist in the table otherwise it should return empty list</li></ul><h3 id="6025ba1d-1f50-4bd0-90eb-02381648eada" class="">(GET) /connectionDict/alldelete</h3><ul id="7a6e53cc-671f-4e66-8828-f7a2d21167c1" class="bulleted-list"><li>This is an API only for development</li></ul><ul id="ffb709e5-9c24-482a-bc7e-1c4c938a1d8c" class="bulleted-list"><li>delete all entries from the connectionDict table</li></ul><h3 id="2d93e49e-91a2-4d97-ad6f-aec858a47cd9" class="">(GET) /connectionDict/delete</h3><ul id="82f5b9c8-237d-4297-9a0d-50ed9a900914" class="bulleted-list"><li>Delete one specific entry or delete every entry associated with one slot</li></ul><ul id="6fc62c3a-4f70-45e7-bc94-ebcd574a515c" class="bulleted-list"><li>Handles erroes when we cannot find the entry we want to delete</li></ul><p id="23d841c6-3870-48b1-9a35-592541c4aaea" class="">This function serves for the purpose of deleting entries in the ConnectionDict table.</p><h3 id="ebec902b-b776-4778-92c5-a1f5dfd5bf9d" class="">(GET) /connectionDict/isConnected</h3><ul id="bf03c402-5639-43e5-a990-1d32d2ac787f" class="bulleted-list"><li>Return Boolean whether a slot connect with certain connectionId</li></ul><p id="70eb8c16-8c15-4d13-8b34-52a58fd88190" class="">This function serves for the purpose of checking connectivity for a slot and connectionId.</p><h3 id="6df3969a-e028-4255-a9ef-3752152b5624" class="">(GET) /connectionDict</h3><ul id="a8bff99f-bf17-49ee-9e9c-7e54a584df23" class="bulleted-list"><li>Return Boolean whether a slot connect with certain widget</li></ul><p id="e65cd5ab-2d71-460d-ab32-13b5230dfb61" class="">This function serves for the purpose of checking connectivity for slot and widget</p><p id="1021eb0f-738a-4410-9614-7e11eb00a49c" class="">                                                                                                                        </p><h2 id="7b8418ff-928e-46fd-b73c-43d4bf57f0ae" class="">Future Needs</h2><ol type="1" id="5945ac00-2454-4aaa-8eb6-99438e31f0ce" class="numbered-list" start="1"><li>This API has already capable of replacing the existing class with some assumptions. I modified the widget manager in order to give them unique widget Id for the purpose of identification. However, we could also put this part of the code inside of the APIs. We will make another table for that purpose.</li></ol><ol type="1" id="d1d6ef77-e3a2-4c97-b076-33d9cac9031d" class="numbered-list" start="2"><li>We could reconsider how to setup the table.</li></ol><ol type="1" id="b3cbfa3d-19f7-4aef-a99e-893b0d416d02" class="numbered-list" start="3"><li>Test for more cases.</li></ol><p id="b87580a3-b8a4-46ff-874e-f0f0693ba7cd" class="">
+</p></div></article></body></html>

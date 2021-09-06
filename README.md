@@ -22,15 +22,15 @@ Whenever modify the code, we need to restart this image and we should be able to
 
 — app
 
-    — crud.py
+— crud.py
 
-    — database.py
+— database.py
 
-    — main.py
+— main.py
 
-    — models.py
+— models.py
 
-    — schema.py
+— schema.py
 
 — docker-compose.yml
 
@@ -102,8 +102,52 @@ We assume we will provide each widget a unique Id. Slot and ConnectionId are the
 
 Each Unique id, slot and connectionId will become an entry in the table.
 
-### (POST) /connectionDict
+### (POST) /connectionDict/add
 
 - We could inject new entry into the ConnectionDict table.
 - Forbid Repetition entry
 - Autoincreate primary key for ConnectionDict table
+
+This function serves for the purpose of adding entries in the ConnectionDict table.
+
+### (GET) /connectionDict/allsearch
+
+- This is an API only for development
+- return all entries from the connectionDict table
+
+### (POST) /connectionDict/search
+
+- This is an API only for development
+- return the specific entry if exist in the table otherwise it should return empty list
+
+### (GET) /connectionDict/alldelete
+
+- This is an API only for development
+- delete all entries from the connectionDict table
+
+### (GET) /connectionDict/delete
+
+- Delete one specific entry or delete every entry associated with one slot
+- Handles erroes when we cannot find the entry we want to delete
+
+This function serves for the purpose of deleting entries in the ConnectionDict table.
+
+### (GET) /connectionDict/isConnected
+
+- Return Boolean whether a slot connect with certain connectionId
+
+This function serves for the purpose of checking connectivity for a slot and connectionId.
+
+### (GET) /connectionDict
+
+- Return Boolean whether a slot connect with certain widget
+
+This function serves for the purpose of checking connectivity for slot and widget
+
+                                                                                                                        
+
+## Future Needs
+
+1. This API has already capable of replacing the existing class with some assumptions. I modified the widget manager in order to give them unique widget Id for the purpose of identification. However, we could also put this part of the code inside of the APIs. We will make another table for that purpose.
+2. We could reconsider how to setup the table.
+3. Test for more cases.
