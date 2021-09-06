@@ -21,6 +21,7 @@ Whenever modify the code, we need to restart this image and we should be able to
 ## File Structure
 
 —- Fastapi
+
     -- app
 
         —- crud.py
@@ -40,6 +41,7 @@ Whenever modify the code, we need to restart this image and we should be able to
     —- requirement.txt
 
 —- README.md
+
 -- README.html
 
 I believe we only need to change the following four files: [curd.py](http://curd.py), main.py, models.py, and [schema.py](http://schema.py). The rest of files are for configration purposes.
