@@ -1,6 +1,7 @@
 # FastApi + PostgreSql ReadME
 
 I want to introduce this project in a following order: file structure, APIs and future needs.
+We can Access the Swagger UI by entering http://localhost/docs once we start the container.
 
 ## General Ideas about this project
 
