@@ -20,7 +20,7 @@ def db():
 # I often use this API to see whether the update is responsive just in case.
 @app.get("/")
 def read_root():
-    return {"Hello": "World 13"}
+    return {"Hello": "World 14"}
 
 @app.get('/connectionDict/allsearch')
 def get_connectionDict(db=Depends(db)):
@@ -118,3 +118,31 @@ def isconnected(widget_id: int, slot: str, connectionid=None, db=Depends(db)):
 def isset(widget_id: int, slot: str, db=Depends(db)):
     binary = crud.is_set(widget_id, slot, db)
     return {'is set': binary}
+
+@app.get('/test')
+def simpletest(username: str, password: str):
+    print("username: ", username)
+    print("password: ", password)
+    return {"username" : username}
+
+@app.get('/test/deleteInfo')
+def simpletest(attr: str, sourceId: str):
+    print("attr: ", attr)
+    print("sourceId: ", sourceId)
+    return {"attr" : attr, "sourceId": sourceId}
+
+@app.get('/test/addInfo')
+def simpletest2(attr: str, sourceId: str):
+    print("attr: ", attr)
+    print("sourceId: ", sourceId)
+    return {"attr" : attr, "sourceId": sourceId}
+
+@app.get('/test/isConnected')
+def simpletest3(attr: str):
+    print("attr: ", attr)
+    return {"attr" : attr}
+
+@app.get('/test/isSet')
+def simpletest4(attr: str):
+    print("attr: ", attr)
+    return {"attr" : attr}
