@@ -1,6 +1,7 @@
 # FastApi + PostgreSql ReadME
 
 I want to introduce this project in a following order: file structure, APIs and future needs.
+We can Access the Swagger UI by entering http://localhost/docs once we start the container.
 
 ## General Ideas about this project
 
@@ -20,25 +21,29 @@ Whenever modify the code, we need to restart this image and we should be able to
 
 ## File Structure
 
-— app
+—- Fastapi
 
-— crud.py
+    -- app
 
-— database.py
+        —- crud.py
 
-— main.py
+        —- database.py
 
-— models.py
+        —- main.py
 
-— schema.py
+        —- models.py
 
-— docker-compose.yml
+        —- schema.py
 
-— Dockerfile
+    —- docker-compose.yml
 
-— requirement.txt
+    —- Dockerfile
 
-— README.md
+    —- requirement.txt
+
+—- README.md
+
+-- README.html
 
 I believe we only need to change the following four files: [curd.py](http://curd.py), main.py, models.py, and [schema.py](http://schema.py). The rest of files are for configration purposes.
 
