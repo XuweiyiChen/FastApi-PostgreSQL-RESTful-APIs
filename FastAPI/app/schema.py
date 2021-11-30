@@ -1,16 +1,8 @@
 from pydantic import BaseModel
 from typing import Optional
 
-# class DeviceInfo(BaseModel):
-#     token: str
-#     username: Optional[str]
-
-#     class Config:
-#         orm_mode = True
-
-
 class Configuration(BaseModel):
-    modelUrl: str
+    modelidentity: str
     frequency: int
     federated: bool
 
@@ -18,10 +10,16 @@ class Configuration(BaseModel):
         orm_mode = True
 
 class ConnectionDict(BaseModel):
-    # id: int
     widget_id: int
     slot: str
-    connectionid : int
+    connectionid: int
+
+    class Config:
+        orm_mode = True
+
+class ConnectionId(BaseModel):
+    widgetid: int
+    widgetname: str
 
     class Config:
         orm_mode = True

@@ -3,10 +3,10 @@ from sqlalchemy.sql.sqltypes import Interval
 from fastapi import FastAPI, Depends, HTTPException
 from .database import SessionLocal, engine
 from sqlalchemy.orm import Session
-from .schema import ConnectionDict, Configuration
+from .schema import ConnectionDict, ConnectionId, Configuration
 from . import crud, models
 
-models.Base.metadata.create_all(bind=engine)
+models.Configuration.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -21,6 +21,20 @@ def db():
 @app.get("/")
 def read_root():
     return {"Hello": "World 14"}
+
+@app.post('/configuration')
+def save_configuration(config: Configuration, db=Depends(db)):
+    # always maintain one config
+    crud.delete_nudges_configuration(db)
+    return crud.save_nudges_configuration(db, config)
+
+@app.get('/configuration')
+def get_configuration(db=Depends(db)):
+    config = crud.get_nudges_configuration(db)
+    if config:
+        return config
+    else:
+        raise HTTPException(404, crud.error_message('No configuration set'))
 
 @app.get('/connectionDict/allsearch')
 def get_connectionDict(db=Depends(db)):
@@ -109,15 +123,37 @@ def isconnected(widget_id: int, slot: str, connectionid=None, db=Depends(db)):
             return HTTPException(status_code=403, detail="Connection Id type should be integer")
         else:
             result = crud.is_connect_connection(widget_id, slot, connectionid, db)
-            return {'is connect' : result}
+            return {'is_connect' : result}
     else:
         result = crud.is_connect_slot(widget_id, slot, db)
-        return {'is connect' : result}
+        return {'is_connect' : result}
+
+@app.get('/connectionId/id')
+def get_id(db=Depends(db)):
+    ids = crud.get_dict_column(db)
+    max_id = 0
+    if ids is None:
+        max_id = max(ids) + 1
+    # construct a ConnectionId object
+    return {'id': max_id}
+
+@app.post('/connectionId/set_id')
+def reserve_id(connectionId: ConnectionId, db=Depends(db)):
+    return crud.save_id(db, connectionId)
+
+@app.get('/connectionId/get_id')
+def show_all_id(db=Depends(db)):
+    all_id = crud.get_allId(db)
+
+    if all_id is None:
+        return HTTPException(status_code=403, details="Something is wrong")
+
+    return all_id
 
 @app.get('/connectionDict/isSet')
 def isset(widget_id: int, slot: str, db=Depends(db)):
     binary = crud.is_set(widget_id, slot, db)
-    return {'is set': binary}
+    return {'is_set': binary}
 
 @app.get('/test')
 def simpletest(username: str, password: str):
