@@ -2,19 +2,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.functions import mode
 from . import schema, models
 
-def save_nudges_configuration(db: Session, config: schema.Configuration):
-    config_model = models.Configuration(**config.dict())
-    db.add(config_model)
-    db.commit()
-    db.refresh(config_model)
-    return config_model
-
-def get_nudges_configuration(db: Session):
-    return db.query(models.Configuration).first()
-
-def delete_nudges_configuration(db: Session):
-    db.query(models.Configuration).delete()
-
 def save_cdict(db: Session, connectionDict: schema.ConnectionDict):
     cdict = models.ConnectionDict(**connectionDict.dict())
     db.add(cdict)
@@ -74,7 +61,7 @@ def delete_slot(widget_id: int, slot: str, db: Session):
             filter(models.ConnectionDict.widget_id == widget_id). \
             filter(models.ConnectionDict.slot == slot).delete()
     db.commit()
-    return {"Details" : "Delete Entries match given widget id and slot"}
+    return {"Details" : "One connectionid is gone"}
 
 def delete_connection(widget_id: int, slot: str, connectionId: int, db: Session):
     # we are going to delete everything in the table filitering three things: widget id, slot and connection id
@@ -83,7 +70,7 @@ def delete_connection(widget_id: int, slot: str, connectionId: int, db: Session)
             filter(models.ConnectionDict.slot == slot). \
             filter(models.ConnectionDict.connectionid == connectionId).delete()
     db.commit()
-    return {"Details" : "Delete Entries match given widget id, slot, and connection Id"}
+    return {"Details" : "One Specific entry is gone"}
 
 def is_connect_slot(widget_id: int, slot: str, db: Session):
     if get_slot_separate(db, widget_id, slot) == []:

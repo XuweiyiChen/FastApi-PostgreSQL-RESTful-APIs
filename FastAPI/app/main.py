@@ -20,21 +20,7 @@ def db():
 # I often use this API to see whether the update is responsive just in case.
 @app.get("/")
 def read_root():
-    return {"Hello": "World 14"}
-
-@app.post('/configuration')
-def save_configuration(config: Configuration, db=Depends(db)):
-    # always maintain one config
-    crud.delete_nudges_configuration(db)
-    return crud.save_nudges_configuration(db, config)
-
-@app.get('/configuration')
-def get_configuration(db=Depends(db)):
-    config = crud.get_nudges_configuration(db)
-    if config:
-        return config
-    else:
-        raise HTTPException(404, crud.error_message('No configuration set'))
+    return {"Hello": "World 15"}
 
 @app.get('/connectionDict/allsearch')
 def get_connectionDict(db=Depends(db)):
@@ -117,7 +103,7 @@ def save_connectionDict(connectionDict: ConnectionDict, db=Depends(db)):
 @app.get('/connectionDict/isConnected')
 def isconnected(widget_id: int, slot: str, connectionid=None, db=Depends(db)):
     # return {'test': 1000}
-    if connectionid:
+    if connectionid is not None:
         connectionid = int(connectionid)
         if not type(connectionid) is int:
             return HTTPException(status_code=403, detail="Connection Id type should be integer")
@@ -132,8 +118,9 @@ def isconnected(widget_id: int, slot: str, connectionid=None, db=Depends(db)):
 def get_id(db=Depends(db)):
     ids = crud.get_dict_column(db)
     max_id = 0
-    if ids is None:
-        max_id = max(ids) + 1
+    if ids is not None:
+        ids = ids[-1][0]
+        max_id = ids + 1
     # construct a ConnectionId object
     return {'id': max_id}
 
@@ -155,30 +142,3 @@ def isset(widget_id: int, slot: str, db=Depends(db)):
     binary = crud.is_set(widget_id, slot, db)
     return {'is_set': binary}
 
-@app.get('/test')
-def simpletest(username: str, password: str):
-    print("username: ", username)
-    print("password: ", password)
-    return {"username" : username}
-
-@app.get('/test/deleteInfo')
-def simpletest(attr: str, sourceId: str):
-    print("attr: ", attr)
-    print("sourceId: ", sourceId)
-    return {"attr" : attr, "sourceId": sourceId}
-
-@app.get('/test/addInfo')
-def simpletest2(attr: str, sourceId: str):
-    print("attr: ", attr)
-    print("sourceId: ", sourceId)
-    return {"attr" : attr, "sourceId": sourceId}
-
-@app.get('/test/isConnected')
-def simpletest3(attr: str):
-    print("attr: ", attr)
-    return {"attr" : attr}
-
-@app.get('/test/isSet')
-def simpletest4(attr: str):
-    print("attr: ", attr)
-    return {"attr" : attr}
