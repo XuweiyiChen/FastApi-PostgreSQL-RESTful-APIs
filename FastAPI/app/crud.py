@@ -2,6 +2,19 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.functions import mode
 from . import schema, models
 
+def save_nudges_configuration(db: Session, config: schema.Configuration):
+    config_model = models.Configuration(**config.dict())
+    db.add(config_model)
+    db.commit()
+    db.refresh(config_model)
+    return config_model
+
+def get_nudges_configuration(db: Session):
+    return db.query(models.Configuration).first()
+
+def delete_nudges_configuration(db: Session):
+    db.query(models.Configuration).delete()
+    
 def save_cdict(db: Session, connectionDict: schema.ConnectionDict):
     cdict = models.ConnectionDict(**connectionDict.dict())
     db.add(cdict)

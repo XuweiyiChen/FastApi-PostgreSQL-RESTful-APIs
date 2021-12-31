@@ -13,3 +13,10 @@ class ConnectionId(Base):
     # id = Column(Integer, primary_key = True)
     widget_id = Column(Integer, primary_key = True)
     widget_name = Column(String)
+
+class Configuration(Base):
+    __tablename__ = 'Configuration'
+    id = Column(Integer, primary_key = True, autoincrement = True)
+    modelUrl = Column(String)
+    frequency = Column(Integer)
+    federated = Column(Boolean)

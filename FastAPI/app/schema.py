@@ -1,6 +1,14 @@
 from pydantic import BaseModel
 from typing import Optional
 
+class Configuration(BaseModel):
+    modelUrl: str
+    frequency: int
+    federated: bool
+
+    class Config:
+        orm_mode = True
+        
 class ConnectionDict(BaseModel):
     widget_id: int
     slot: str
