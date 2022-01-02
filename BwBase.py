@@ -2,6 +2,8 @@ import os
 import re
 import sys
 import logging
+
+from requests.models import Response
 import jsonpickle
 import json
 import functools
@@ -20,7 +22,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from time import sleep
-
+# for communication purporse
+# TODO: TEST REQUIRED
+import requests
 
 from AnyQt.QtWidgets import (
     QWidget,
@@ -368,6 +372,136 @@ class ConnectionDict:
             return True
         return False
 
+# add a class for communication purpose: request for data
+
+class requestConnection:
+    def __init__(self):
+        self._baseUrl = "http://host.docker.internal"
+        self._widgetId = -1
+    
+    def get_id(self):
+        # GET ID ENDPOINT
+        getUrl = self._baseUrl + "/connectionDict/id"
+        requestId = requests.get(getUrl)
+
+        if requestId.ok:
+            convert_id = json.loads(requestId.text)
+            print("response from get id: ", convert_id)
+
+            sys.stderr.write("received id is {}\n".format(convert_id["id"]))
+            return convert_id["id"]
+        else:
+            sys.stderr.write("Request Failed")
+            return -1
+    
+    def set_id(self, widget_id, widget_name):
+        # First time add 0 might result conflict, but it works in the dataset end
+        # SET ID ENDPOINT
+        setIdUrl = self._baseUrl + "/connectionDict/set_id"
+        data = {
+            'widget_id': widget_id,
+            'widget_name': widget_name
+        }
+        request_setId = requests.post(url=setIdUrl, data=data)
+
+        if request_setId.ok:
+            response = json.loads(request_setId.text)
+            print('response from set id: ', response)
+            
+            sys.stderr.write("widget id is {} and widget name is {}\n".format(response["widget_id"], response["widget_name"]))
+            return True
+        else:
+            sys.stderr.write("Request Failed")
+            return False
+    
+    def add_connection(self, widget_id, slot, connectionid):
+        addConUrl = self._baseUrl + "/connectionDict/add"
+        data = {
+            'widget_id': widget_id,
+            'slot': slot,
+            'connectionid': connectionid
+        }
+        request_addCon = requests.post(url=addConUrl, data=data)
+
+        if request_addCon.ok:
+            response = json.loads(request_addCon.text)
+            print('response from add connection: ', response)
+
+            sys.stderr.write("connection id is {}, slot is {}, id is {}, and widget_id is {}\n".format(response["connectionid"], response["slot"], response["id"], response["widget_id"]))
+            return True
+        else:
+            sys.stderr.write("Request Failed")    
+            return False
+    
+    def remove_connection(self, widget_id, slot, connectionid):
+        removeConUrl = self._baseUrl + "/connectionDict/delete"
+        PARAMS = {
+            'widget_id': widget_id,
+            'slot': slot,
+            'connectionid': connectionid
+        }
+
+        request_removeCon = requests.get(url=removeConUrl, params=PARAMS)
+
+        # TODO: update more clear debug information
+        if request_removeCon.ok:
+            sys.stderr.write('The Remove Connection procedure is successful')
+            return True
+        else:
+            sys.stderr.write('The Remove Connection procedure is unsuccessful')
+            return False
+    
+    def requestIsConnected(self, widget_id, slot, connectionid):
+        # I do not expect connectionid to be None
+        # NEED further tests for this specific reason
+        isConnectedUrl = self._baseUrl + "/connectionDict/isConnected"
+        PARAMS = {
+            'widget_id': widget_id,
+            'slot': slot,
+            'connectionid': connectionid
+        }
+        request_isConnected = requests.get(url=isConnectedUrl, params=PARAMS)
+        # TODO: update more clear debug information
+        # TODO: how to make sure that boolean works
+        if request_isConnected.ok:
+            response = json.loads(request_isConnected.text)
+            print('response from isConnection: ', response)
+
+            if response["is_connect"] is True:
+                sys.stderr.write('The IsConnection procedure is successful')
+                return True
+            else:
+                sys.stderr.write('The IsConnection procedure is unsuccessful')
+                return False
+        else:
+            sys.stderr.write('The IsConnection procedure is unsuccessful')
+            return False
+    
+    def requestIsSet(self, widget_id, slot):
+        # I do not expect connectionid to be None
+        # NEED further tests for this specific reason
+        isSetUrl = self._baseUrl + "/connectionDict/isSet"
+        PARAMS = {
+            'widget_id': widget_id,
+            'slot': slot,
+        }
+        request_isSet = requests.get(url=isSetUrl, params=PARAMS)
+        # TODO: update more clear debug information
+        # TODO: how to make sure that boolean works
+        if request_isSet.ok:
+            response = json.loads(request_isSet.text)
+            print('response from isSet: ', response)
+
+            if response["is_Set"] is True:
+                sys.stderr.write('The IsSet procedure is successful')
+                return True
+            else:
+                sys.stderr.write('The IsSet procedure is unsuccessful')
+                return False
+        else:
+            sys.stderr.write('The IsSet procedure is unsuccessful')
+            return False
+
 
 class OWBwBWidget(widget.OWWidget):
     serversFile = "/biodepot/serverSettings.json"
@@ -443,6 +577,15 @@ class OWBwBWidget(widget.OWWidget):
         # For compatibility if triggers are not being kept
         if not hasattr(self, "triggerReady"):
             self.triggerReady = {}
+        
+        self.requestConnection = requestConnection()
+
+        # TEST ID CASE
+        self.getID = self.requestConnection.get_id()
+        print("image name： ", image_name)
+        print("image tag: ", image_tag)
+        self.requestConnection.set_id(self.getID, image_name)
+
 
     def getQBGroups(self):
         QBList = []
