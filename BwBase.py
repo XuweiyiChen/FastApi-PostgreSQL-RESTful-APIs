@@ -381,7 +381,7 @@ class requestConnection:
     
     def get_id(self):
         # GET ID ENDPOINT
-        getUrl = self._baseUrl + "/connectionDict/id"
+        getUrl = self._baseUrl + "/connectionId/id"
         requestId = requests.get(getUrl)
 
         if requestId.ok:
@@ -391,19 +391,19 @@ class requestConnection:
             sys.stderr.write("received id is {}\n".format(convert_id["id"]))
             return convert_id["id"]
         else:
-            sys.stderr.write("Request Failed")
+            sys.stderr.write("Request Failed.\n")
             return -1
     
     def set_id(self, widget_id, widget_name):
         # First time add 0 might result conflict, but it works in the dataset end
         # SET ID ENDPOINT
-        setIdUrl = self._baseUrl + "/connectionDict/set_id"
+        setIdUrl = self._baseUrl + "/connectionId/set_id"
         data = {
             'widget_id': widget_id,
             'widget_name': widget_name
         }
-        request_setId = requests.post(url=setIdUrl, data=data)
-
+        request_setId = requests.post(url=setIdUrl, json=data)
+        print(2000000000)
         if request_setId.ok:
             response = json.loads(request_setId.text)
             print('response from set id: ', response)
@@ -411,7 +411,7 @@ class requestConnection:
             sys.stderr.write("widget id is {} and widget name is {}\n".format(response["widget_id"], response["widget_name"]))
             return True
         else:
-            sys.stderr.write("Request Failed")
+            sys.stderr.write("Request Failed\n")
             return False
     
     def add_connection(self, widget_id, slot, connectionid):
@@ -421,7 +421,7 @@ class requestConnection:
             'slot': slot,
             'connectionid': connectionid
         }
-        request_addCon = requests.post(url=addConUrl, data=data)
+        request_addCon = requests.post(url=addConUrl, json=data)
 
         if request_addCon.ok:
             response = json.loads(request_addCon.text)
@@ -430,7 +430,7 @@ class requestConnection:
             sys.stderr.write("connection id is {}, slot is {}, id is {}, and widget_id is {}\n".format(response["connectionid"], response["slot"], response["id"], response["widget_id"]))
             return True
         else:
-            sys.stderr.write("Request Failed")    
+            sys.stderr.write("Request Failed\n")    
             return False
     
     def remove_connection(self, widget_id, slot, connectionid):
@@ -445,10 +445,10 @@ class requestConnection:
 
         # TODO: update more clear debug information
         if request_removeCon.ok:
-            sys.stderr.write('The Remove Connection procedure is successful')
+            sys.stderr.write('The Remove Connection procedure is successful.\n')
             return True
         else:
-            sys.stderr.write('The Remove Connection procedure is unsuccessful')
+            sys.stderr.write('The Remove Connection procedure is unsuccessful.\n')
             return False
     
     def requestIsConnected(self, widget_id, slot, connectionid):
@@ -468,13 +468,13 @@ class requestConnection:
             print('response from isConnection: ', response)
 
             if response["is_connect"] is True:
-                sys.stderr.write('The IsConnection procedure is successful')
+                sys.stderr.write('The IsConnection procedure is successful.\n')
                 return True
             else:
-                sys.stderr.write('The IsConnection procedure is unsuccessful')
+                sys.stderr.write('The IsConnection procedure is unsuccessful.\n')
                 return False
         else:
-            sys.stderr.write('The IsConnection procedure is unsuccessful')
+            sys.stderr.write('The IsConnection procedure is unsuccessful.\n')
             return False
     
     def requestIsSet(self, widget_id, slot):
@@ -493,13 +493,13 @@ class requestConnection:
             print('response from isSet: ', response)
 
             if response["is_Set"] is True:
-                sys.stderr.write('The IsSet procedure is successful')
+                sys.stderr.write('The IsSet procedure is successful.\n')
                 return True
             else:
-                sys.stderr.write('The IsSet procedure is unsuccessful')
+                sys.stderr.write('The IsSet procedure is unsuccessful.\n')
                 return False
         else:
-            sys.stderr.write('The IsSet procedure is unsuccessful')
+            sys.stderr.write('The IsSet procedure is unsuccessful.\n')
             return False
 
 
@@ -581,10 +581,11 @@ class OWBwBWidget(widget.OWWidget):
         self.requestConnection = requestConnection()
 
         # TEST ID CASE
-        self.getID = self.requestConnection.get_id()
+        received_id = self.requestConnection.get_id() 
+        self.getID = int(received_id)
         print("image name： ", image_name)
         print("image tag: ", image_tag)
-        self.requestConnection.set_id(self.getID, image_name)
+        self.requestConnection.set_id(self.getID, str(image_name))
 
 
     def getQBGroups(self):
