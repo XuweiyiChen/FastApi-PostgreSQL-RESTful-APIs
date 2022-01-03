@@ -74,7 +74,7 @@ def delete_slot(widget_id: int, slot: str, db: Session):
             filter(models.ConnectionDict.widget_id == widget_id). \
             filter(models.ConnectionDict.slot == slot).delete()
     db.commit()
-    return {"Details" : "One connectionid is gone"}
+    return {"Details" : "One slot is gone"}
 
 def delete_connection(widget_id: int, slot: str, connectionId: int, db: Session):
     # we are going to delete everything in the table filitering three things: widget id, slot and connection id

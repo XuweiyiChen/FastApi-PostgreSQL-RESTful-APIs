@@ -299,6 +299,11 @@ class BwbGuiElements:
 
     def reenableAll(self, OWself):
         for attr in self._dict.keys():
+            print(101010101010110101010110101010101010101011010101010)
+            print("very interesting one reenableAll")
+            func_name = "reenableAll"
+            boolean_isConnect = OWself.inputConnections.isConnected(attr)
+            OWself.requestConnection.test_isConnect(func_name, boolean_isConnect, OWself.getID, attr, None)
             if not OWself.inputConnections.isConnected(attr):
                 self.enable(attr, getattr(OWself, attr))
 
@@ -518,6 +523,28 @@ class requestConnection:
             print(request_isSet.text) #TEXT/HTML
             print(request_isSet.status_code, request_isSet.reason) #HTTP
             return False
+    
+    def test_isConnect(self, func_name, boolean_isConnect, widget_id, slot, connectionid):
+        print("In" + func_name + "123123123123123123123123123123")
+        received_isConnect = self.requestIsConnected(widget_id, slot, connectionid)
+        print("boolean_isConnect: ", boolean_isConnect)
+        print("received_isConnect: ", received_isConnect)
+
+        if received_isConnect == boolean_isConnect:
+            print("equivalent for isConnect function!!!!")
+        else:
+            print("ERROR: NEED LOOK INTO isConnect function !!!")
+    
+    def test_isSet(self, func_name, boolean_isSet, widget_id, slot):
+        print("In" + func_name + "123123123123123123123123123123123")
+        received_isSet = self.requestIsSet(widget_id, slot)
+        print("boolean_isSet: ", boolean_isSet)
+        print("received_isSet: ", received_isSet)
+
+        if boolean_isSet == received_isSet:
+            print("equivalent for isSet function!!!!")
+        else:
+            print("ERROR: NEED LOOK INTO isSetfunction!!!!!!")
 
 
 class OWBwBWidget(widget.OWWidget):
@@ -687,7 +714,13 @@ class OWBwBWidget(widget.OWWidget):
         # disable connected elements
         for i in self.inputs:
             attr = i.name
-            if self.inputConnections.isConnected(attr):
+            print(11111111111111111111111111111111111111111111111111111111)
+            print("attr: ", attr)
+            func_name = "drawGui"
+            boolean_isConnect = self.inputConnections.isConnected(attr)
+            self.requestConnection.test_isConnect(func_name, boolean_isConnect, self.getID, attr, None)
+            
+            if boolean_isConnect:
                 self.bgui.disable(attr)
 
         # make a box for the console and console control - not abs necessary but it might help with future org and with the size hinting system
@@ -1777,7 +1810,12 @@ class OWBwBWidget(widget.OWWidget):
         )
         disabledFlag = False
         checkbox = None
-        if addCheckbox or self.inputConnections.isConnected(pname):
+        print(222222222222222222222222222222222222222222222222)
+        func_name = "drawTextBox"
+        pname_isConnect = self.inputConnections.isConnected(pname)
+        self.requestConnection.test_isConnect(func_name, pname_isConnect, self.getID, pname, None)
+
+        if addCheckbox or pname_isConnect:
             disabledFlag = True
         elements = []
         # add checkbox if necessary
@@ -1798,7 +1836,13 @@ class OWBwBWidget(widget.OWWidget):
                 lambda: self.updateCheckbox(pname, checkbox.isChecked(), value=value)
             )
             elements.append(checkbox)
-            if checkbox.isChecked() and not self.inputConnections.isConnected(pname):
+
+            print(3333333333333333333333333333333333)
+            func_name = "drawTextBox"
+            boolean_isConnect = self.inputConnections.isConnected(pname)
+            self.requestConnection.test_isConnect(func_name, boolean_isConnect, self.getID, pname, None)
+
+            if checkbox.isChecked() and not boolean_isConnect:
                 disabledFlag = False
 
         # line edit for manual file entry
@@ -2198,10 +2242,17 @@ class OWBwBWidget(widget.OWWidget):
                 "Checking triggers with runTriggers{}\n".format(self.runTriggers)
             )
             for trigger in self.runTriggers:
-                if not self.inputConnections.isSet(trigger):
+
+                print("4444444444444444444444444444444444444444444444444444444")
+                func_name = "checkTrigger"
+                boolean_isSet = self.inputConnections.isSet(trigger)
+                self.requestConnection.test_isSet(func_name, boolean_isSet, self.getID, trigger)
+                
+                if not boolean_isSet:
                     return
                 if not self.triggerReady[trigger]:
                     return
+                
             self.onRunClicked()
 
     def bwbFileEntry(
@@ -2293,6 +2344,11 @@ class OWBwBWidget(widget.OWWidget):
 
     def updateCheckbox(self, pname, state, value=None):
         self.optionsChecked[pname] = state
+        print(5555555555555555555555555555555555555555555)
+        func_name = "updateCheckbox"
+        boolean_isConnect = self.inputConnections.isConnected(pname)
+        self.requestConnection.test_isConnect(func_name, boolean_isConnect, self.getID, pname)
+
         sys.stderr.write(
             "updating checkbox pname {} connect {} isChecked {}\n".format(
                 pname, self.inputConnections.isConnected(pname), state
@@ -2337,7 +2393,14 @@ class OWBwBWidget(widget.OWWidget):
         # check for test mode pre-signal
         if type(value) is str and value[0:8] == "__purge ":
             # remove signal - this used to be None which was also passed when the value actually was None
+            print(555555555555555555555555555555555555)
             self.inputConnections.remove(attr, sourceId)
+            self.requestConnection.remove_connection(self.getID, attr, sourceId)
+            print("handleinputs first if statment")
+            func_name = "handleInputs"
+            boolean_isConnect = self.inputConnections.isConnected(attr)
+            self.requestConnection.test_isConnect(func_name, boolean_isConnect, self.getID, attr, None)
+
             sys.stderr.write(
                 "sig handler removing {} disabled {}\n".format(
                     attr, self.inputConnections.isConnected(attr)
@@ -2365,7 +2428,14 @@ class OWBwBWidget(widget.OWWidget):
             else:
                 self.bgui.clear(attr, activate=True)
                 self.bgui.disable(attr)
+            
+            print(6666666666666666666666666666666666666666666666666)
+            func_name = "handleInputs"
+            print("handleInputs second if statement")
             self.inputConnections.add(attr, sourceId)
+            print("add function add function")
+            self.requestConnection.add_connection(self.getID, attr, sourceId)
+
             sys.stderr.write(
                 "sig handler adding node with no signal: attr {} sourceId {} value {}\n".format(
                     attr, sourceId, value
@@ -2383,7 +2453,12 @@ class OWBwBWidget(widget.OWWidget):
             if test:
                 self.saveBashFile = None
             self.testMode.setChecked(test)
+            print(777777777777777777777777777777777777777777777)
+            func_name = "handleInputs"
+            print("handleInputs third if statement")
             self.inputConnections.add(attr, sourceId)
+            print("add function add function")
+            self.requestConnection.add_connection(self.getID, attr, sourceId)
             sys.stderr.write(
                 "sig handler adding input: attr {} sourceId {} value {}\n".format(
                     attr, sourceId, value
@@ -2432,6 +2507,11 @@ class OWBwBWidget(widget.OWWidget):
 
     def updateGui(self, attr, value, removeFlag=False, disableFtn=None, inputType=None):
         # disables manual input when the value has been given by an input connection
+        print(99999999999999999999999999999999999999999999999)
+        func_name = "updateGui"
+        boolean_isConnect = self.inputConnections.isConnected(attr)
+        self.requestConnection.test_isConnect(func_name, boolean_isConnect, self.getID, attr, None)
+
         if self.inputConnections.isConnected(attr):
             #update the GUI if there is an update function
             updateFunction=self.helpers.function(attr, "update")
