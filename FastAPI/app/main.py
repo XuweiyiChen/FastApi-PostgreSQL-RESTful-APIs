@@ -114,6 +114,8 @@ def isconnected(widget_id: int, slot: str, connectionid=None, db=Depends(db)):
         result = crud.is_connect_slot(widget_id, slot, db)
         return {'is_connect' : result}
 
+# return 0 have 500 for error 
+
 @app.get('/connectionId/id')
 def get_id(db=Depends(db)):
     ids = crud.get_dict_column(db)

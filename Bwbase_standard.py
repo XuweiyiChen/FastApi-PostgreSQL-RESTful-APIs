@@ -382,8 +382,19 @@ class ConnectionDict:
 class requestConnection:
     def __init__(self):
         self._baseUrl = "http://host.docker.internal"
-        self._widgetId = -1
     
+    def get_addsearch(self):
+        getUrl = self._baseUrl + "/connectionDict/allsearch"
+        requestall = requests.get(getUrl)
+    
+        if requestall.ok:
+            convert_all = json.loads(requestall.text)
+            sys.stderr.write("get_addsearch")
+            print("response from all research: ", convert_all)
+        else:
+            sys.stderr.write("get_addsearch has issue")
+            print("dead")
+
     def get_id(self):
         # GET ID ENDPOINT
         getUrl = self._baseUrl + "/connectionId/id"
@@ -396,8 +407,10 @@ class requestConnection:
             sys.stderr.write("received id is {}\n".format(convert_id["id"]))
             return convert_id["id"]
         else:
-            sys.stderr.write("Request Failed.\n")
-            return -1
+            sys.stderr.write("First Request.\n")
+            # actually 500 but works
+            # need more code
+            return 0
     
     def set_id(self, widget_id, widget_name):
         # First time add 0 might result conflict, but it works in the dataset end
@@ -408,7 +421,6 @@ class requestConnection:
             'widget_name': widget_name
         }
         request_setId = requests.post(url=setIdUrl, json=data)
-        print(2000000000)
         if request_setId.ok:
             response = json.loads(request_setId.text)
             print('response from set id: ', response)
@@ -426,8 +438,9 @@ class requestConnection:
             'slot': slot,
             'connectionid': connectionid
         }
+        print("add")
+        print(data)
         request_addCon = requests.post(url=addConUrl, json=data)
-        print(300000000000)
         if request_addCon.ok:
             response = json.loads(request_addCon.text)
             print('response from add connection: ', response)
@@ -445,9 +458,10 @@ class requestConnection:
             'slot': slot,
             'connectionid': connectionid
         }
+        print("remove")
+        print(PARAMS)
 
         request_removeCon = requests.get(url=removeConUrl, params=PARAMS)
-        print(40000000000)
         # TODO: update more clear debug information
         if request_removeCon.ok:
             response = json.loads(request_removeCon.text)
@@ -474,7 +488,7 @@ class requestConnection:
         request_isConnected = requests.get(url=isConnectedUrl, params=PARAMS)
         # TODO: update more clear debug information
         # TODO: how to make sure that boolean works
-        print(50000000000)
+
         if request_isConnected.ok:
             response = json.loads(request_isConnected.text)
             print('response from isConnection: ', response)
@@ -484,7 +498,7 @@ class requestConnection:
                 print("true")
                 return True
             else:
-                sys.stderr.write('The IsConnection procedure is unsuccessful.\n')
+                sys.stderr.write('The IsConnection procedure is successful.\n')
                 print("false")
                 return False
         else:
@@ -505,7 +519,6 @@ class requestConnection:
         # TODO: update more clear debug information
         # TODO: how to make sure that boolean works
 
-        print(6000000000000)
         if request_isSet.ok:
             response = json.loads(request_isSet.text)
             print('response from isSet: ', response)
@@ -525,23 +538,29 @@ class requestConnection:
             return False
     
     def test_isConnect(self, func_name, boolean_isConnect, widget_id, slot, connectionid):
-        print("In" + func_name + "123123123123123123123123123123")
+        print("In " + func_name)
+        print("widget_id: ", widget_id)
+        print("slot: ", slot)
+        print("connectionid: ", connectionid)
+        self.get_addsearch()
         received_isConnect = self.requestIsConnected(widget_id, slot, connectionid)
         print("boolean_isConnect: ", boolean_isConnect)
         print("received_isConnect: ", received_isConnect)
 
-        if received_isConnect == boolean_isConnect:
+        if received_isConnect is boolean_isConnect:
             print("equivalent for isConnect function!!!!")
         else:
             print("ERROR: NEED LOOK INTO isConnect function !!!")
     
     def test_isSet(self, func_name, boolean_isSet, widget_id, slot):
-        print("In" + func_name + "123123123123123123123123123123123")
+        print("In" + func_name)
+        print("widget_id: ", widget_id)
+        print("slot: ", slot)
         received_isSet = self.requestIsSet(widget_id, slot)
         print("boolean_isSet: ", boolean_isSet)
         print("received_isSet: ", received_isSet)
 
-        if boolean_isSet == received_isSet:
+        if boolean_isSet is received_isSet:
             print("equivalent for isSet function!!!!")
         else:
             print("ERROR: NEED LOOK INTO isSetfunction!!!!!!")
@@ -625,11 +644,12 @@ class OWBwBWidget(widget.OWWidget):
         self.requestConnection = requestConnection()
 
         # TEST ID CASE
-        received_id = self.requestConnection.get_id() 
-        self.getID = int(received_id)
-        print("image name： ", image_name)
-        print("image tag: ", image_tag)
-        self.requestConnection.set_id(self.getID, str(image_name))
+        # received_id = self.requestConnection.get_id() 
+        self.getID = self.widget_id
+        # print("image name： ", image_name)
+        # print("image tag: ", image_tag)
+        # print("name: ", name)
+        # self.requestConnection.set_id(self.getID, str(image_name))
 
 
     def getQBGroups(self):
@@ -715,7 +735,6 @@ class OWBwBWidget(widget.OWWidget):
         for i in self.inputs:
             attr = i.name
             print(11111111111111111111111111111111111111111111111111111111)
-            print("attr: ", attr)
             func_name = "drawGui"
             boolean_isConnect = self.inputConnections.isConnected(attr)
             self.requestConnection.test_isConnect(func_name, boolean_isConnect, self.getID, attr, None)
@@ -2347,7 +2366,7 @@ class OWBwBWidget(widget.OWWidget):
         print(5555555555555555555555555555555555555555555)
         func_name = "updateCheckbox"
         boolean_isConnect = self.inputConnections.isConnected(pname)
-        self.requestConnection.test_isConnect(func_name, boolean_isConnect, self.getID, pname)
+        self.requestConnection.test_isConnect(func_name, boolean_isConnect, self.getID, pname, None)
 
         sys.stderr.write(
             "updating checkbox pname {} connect {} isChecked {}\n".format(
@@ -2394,12 +2413,14 @@ class OWBwBWidget(widget.OWWidget):
         if type(value) is str and value[0:8] == "__purge ":
             # remove signal - this used to be None which was also passed when the value actually was None
             print(555555555555555555555555555555555555)
+            print("delete: ", attr)
+            print("delete: ", sourceId)
             self.inputConnections.remove(attr, sourceId)
             self.requestConnection.remove_connection(self.getID, attr, sourceId)
             print("handleinputs first if statment")
-            func_name = "handleInputs"
-            boolean_isConnect = self.inputConnections.isConnected(attr)
-            self.requestConnection.test_isConnect(func_name, boolean_isConnect, self.getID, attr, None)
+            # func_name = "handleInputs"
+            # boolean_isConnect = self.inputConnections.isConnected(attr)
+            # self.requestConnection.test_isConnect(func_name, boolean_isConnect, self.getID, attr, None)
 
             sys.stderr.write(
                 "sig handler removing {} disabled {}\n".format(
@@ -2435,7 +2456,7 @@ class OWBwBWidget(widget.OWWidget):
             self.inputConnections.add(attr, sourceId)
             print("add function add function")
             self.requestConnection.add_connection(self.getID, attr, sourceId)
-
+            print("add: ", )
             sys.stderr.write(
                 "sig handler adding node with no signal: attr {} sourceId {} value {}\n".format(
                     attr, sourceId, value

@@ -53,7 +53,6 @@ def add_connection(widget_id, slot, connectionid):
         print('dead')
         return False
     
-# add_connection(2, "slot", 3)
 
 def remove_connection(widget_id, slot, connectionid):
     baseUrl = "http://localhost"
